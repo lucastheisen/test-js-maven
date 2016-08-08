@@ -1,0 +1,22 @@
+{
+  "dependencies": {
+    "gulp": "~3.9.1",
+    "gulp-typescript": "~2.13.6",
+    "sax": "~1.2.1",
+    "saxtract": "~1.2.0",
+    "typescript": "~1.8.10"
+  },
+  "description": "Test",
+  "license": "Apache-2.0",
+  "name": "test-js-maven",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lucastheisen/test-js-maven.git"
+  },
+  "scripts": {
+    "prebuild": "npm install",
+    "build": "gulp",
+    "watch": "gulp watch"
+  },
+  "version": "0.0.1-SNAPSHOT"
+}
