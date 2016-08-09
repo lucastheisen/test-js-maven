@@ -1,45 +1,66 @@
+var browserify = require('browserify');
 var fs = require('fs');
 var gulp = require('gulp');
-var saxtract = require('saxtract').sax;
-var ts = require('gulp-typescript');
+var gutil = require('gulp-util');
+var source = require('vinyl-source-stream');
+var tsify = require('tsify');
+var watchify = require('watchify');
 
-var tsProject = ts.createProject('tsconfig.json',
-    {'outFile': 'test-js-maven.js'});
+var watched;
 
-gulp.task('default', ['compileTypescript'], function () {});
-
-gulp.task('compileTypescript', function () {
-    var tsResult = tsProject.src() 
-        .pipe(ts(tsProject));
-
-    return tsResult.js.pipe(gulp.dest("target/classes/META-INF/resources/js"));
-});
-
-gulp.task('watch', ['compileTypescript'], function() {
-    gulp.watch('src/main/typescript/*.ts', ['compileTypescript']);
-});
-
-gulp.task('compileTypescript2', function () {
-    var project,
-        outDir,
-        outFile;
-    
-    project = saxtract.parse(
-        fs.readFileSync('pom.xml'),
+var browserifyCommon = function() {
+    return browserify(
         {
-            'httrectory=$M2_HOMEp://maven.apache.org/POM/4.0.0': '',
-            '/project/artifactId': 'artifactId',
-            'http://maven.apache.org/POM/4.0.0': '',
-            '/project/artifactId': 'artifactId',
-            
-        });
-    outDir = 'target/' + project.artifactId + "-" + project.version + "/js";
+            basedir: '.',
+            debug: true,
+            entries: [
+                './src/main/typescript/app/main.ts'
+            ],
+            cache: {},
+            packageCache: {}
+        })
+        .plugin(tsify);
+}
 
-    var tsProject = ts.createProject('tsconfig.json',
-        {'outFile': project.artifactId + '.js'});
+var browserifyPolyfills = function() {
+    return browserify(
+        {
+            basedir: '.',
+            debug: true,
+            entries: [
+                './src/main/typescript/polyfills.ts'
+            ],
+        })
+        .plugin(tsify);
+}
 
-    var tsResult = tsProject.src() 
-        .pipe(ts(tsProject));
+var bundle = function(browserify, name) { 
+    browserify.bundle()
+        .pipe(source(name))
+        .pipe(gulp.dest('target/classes/META-INF/resources/js'));
+}
 
-    return tsResult.js.pipe(gulp.dest(outDir));
+gulp.task('default', ['browserify'], function () {});
+
+//gulp.task('browserify', ['browserifyCommon', 'browserifyPolyfills'], function () {});
+gulp.task('browserify', ['browserifyCommon'], function () {});
+
+gulp.task('browserifyCommon', function () {
+    // inspired by http://www.typescriptlang.org/docs/handbook/gulp.html
+    return bundle(browserifyCommon(), 'bundle.js');
+});
+
+gulp.task('browserifyPolyfills', function () {
+    // inspired by http://www.typescriptlang.org/docs/handbook/gulp.html
+    return bundle(browserifyPolyfills(), 'polyfills.js');
+});
+
+gulp.task('watch', function () {
+    // inspired by http://www.typescriptlang.org/docs/handbook/gulp.html
+    watched = browserifyCommon().plugin(watchify);
+
+    watched.on('update', function () {bundle(watched, 'bundle.js');});
+    watched.on('log', gutil.log);
+
+    return bundle(watched);
 });

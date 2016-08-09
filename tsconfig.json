@@ -1,12 +1,17 @@
 {
-    "compilerOptions": {
-        "module": "system",
-        "noImplicitAny": true,
-        "preserveConstEnums": true,
-        "removeComments": true,
-        "sourceMap": true
-    },
-    "files": [
-        "src/main/typescript/greeter.ts"
-    ]
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5"
+  },
+  "exclude": [
+    "node",
+    "node_modules",
+    "target"
+  ]
 }
