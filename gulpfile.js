@@ -1,66 +1,23 @@
-var browserify = require('browserify');
 var fs = require('fs');
 var gulp = require('gulp');
-var gutil = require('gulp-util');
-var source = require('vinyl-source-stream');
-var tsify = require('tsify');
-var watchify = require('watchify');
+var ts = require('gulp-typescript');
 
-var watched;
+var tsProject = ts.createProject('tsconfig.json');
 
-var browserifyCommon = function() {
-    return browserify(
-        {
-            basedir: '.',
-            debug: true,
-            entries: [
-                './src/main/typescript/app/main.ts'
-            ],
-            cache: {},
-            packageCache: {}
-        })
-        .plugin(tsify);
-}
+gulp.task('default', ['copyNodeModules', 'compileTypescript'], function () {});
 
-var browserifyPolyfills = function() {
-    return browserify(
-        {
-            basedir: '.',
-            debug: true,
-            entries: [
-                './src/main/typescript/polyfills.ts'
-            ],
-        })
-        .plugin(tsify);
-}
+gulp.task('compileTypescript', function () {
+    var tsResult = tsProject.src() 
+        .pipe(ts(tsProject));
 
-var bundle = function(browserify, name) { 
-    browserify.bundle()
-        .pipe(source(name))
-        .pipe(gulp.dest('target/classes/META-INF/resources/js'));
-}
-
-gulp.task('default', ['browserify'], function () {});
-
-//gulp.task('browserify', ['browserifyCommon', 'browserifyPolyfills'], function () {});
-gulp.task('browserify', ['browserifyCommon'], function () {});
-
-gulp.task('browserifyCommon', function () {
-    // inspired by http://www.typescriptlang.org/docs/handbook/gulp.html
-    return bundle(browserifyCommon(), 'bundle.js');
+    return tsResult.js.pipe(gulp.dest('target/classes/META-INF/resources/js'));
 });
 
-gulp.task('browserifyPolyfills', function () {
-    // inspired by http://www.typescriptlang.org/docs/handbook/gulp.html
-    return bundle(browserifyPolyfills(), 'polyfills.js');
+gulp.task('copyNodeModules', function () {
+    gulp.src('./node_modules/**')
+        .pipe(gulp.dest('target/classes/META-INF/resources/js/node_modules'));
 });
 
-gulp.task('watch', function () {
-    // inspired by http://www.typescriptlang.org/docs/handbook/gulp.html
-    watched = browserifyCommon().plugin(watchify);
-
-    watched.on('update', function () {bundle(watched, 'bundle.js');});
-    watched.on('log', gutil.log);
-
-    return bundle(watched, 'bundle.js');
+gulp.task('watch', ['compileTypescript'], function() {
+    gulp.watch('src/main/typescript/**/*.ts', ['compileTypescript']);
 });
