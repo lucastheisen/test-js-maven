@@ -62,5 +62,5 @@ gulp.task('watch', function () {
     watched.on('update', function () {bundle(watched, 'bundle.js');});
     watched.on('log', gutil.log);
 
-    return bundle(watched);
+    return bundle(watched, 'bundle.js');
 });
