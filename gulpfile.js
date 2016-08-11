@@ -6,13 +6,14 @@ var tsProject = ts.createProject('tsconfig.json');
 
 gulp.task('default', ['copyNodeModules', 'compileTypescript'], function () {});
 
-gulp.task('compileTypescript', ['compileTypescriptGulpSrc'], function () {});
+gulp.task('compileTypescript', ['compileTypescriptTsSrc'], function () {});
 
 gulp.task('compileTypescriptGulp', function () {
     // https://github.com/ivogabe/gulp-typescript/issues/326
     var tsResult = gulp.src(
         [
             'src/main/typescript/**/*.ts',
+            'typings/**',
         ])
         .pipe(ts(tsProject));
 
@@ -44,7 +45,7 @@ gulp.task('compileTypescriptTsSrc', function () {
 
 
 gulp.task('copyNodeModules', function () {
-    gulp.src('node_modules/**')
+    return gulp.src('node_modules/**')
         .pipe(gulp.dest('target/classes/META-INF/resources/js/node_modules'));
 });
 

@@ -5,6 +5,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": false,
+    "outDir": "target/classes/META-INF/resources/js",
     "removeComments": false,
     "sourceMap": true,
     "target": "es5"
