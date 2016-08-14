@@ -127,7 +127,7 @@
             <version>${exec-maven-plugin.version}</version>
             <executions>
               <execution>
-                <id>npm watch</id>
+                <id>tsc watch</id>
                 <phase>process-resources</phase>
                 <goals>
                   <goal>exec</goal>
@@ -135,11 +135,11 @@
                 <configuration>
                   <async>true</async>
                   <asyncDestroyOnShutdown>true</asyncDestroyOnShutdown>
-                  <executable>node/npm.cmd</executable>
+                  <executable>node/node</executable>
                   <workingDirectory>${baseDir}</workingDirectory>
                   <arguments>
-                    <argument>run</argument>
-                    <argument>tsc-watch</argument>
+                    <argument>node_modules/typescript/bin/tsc</argument>
+                    <argument>-w</argument>
                   </arguments>
                 </configuration>
               </execution>
