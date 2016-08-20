@@ -18,5 +18,8 @@
     <!-- 3. Display the application -->
     <body>
         <my-app>Loading...</my-app>
+        <cesium>Loading cesium...</cesium>
+
+        <script src="js/node_modules/cesium/Build/Cesium/Cesium.js"></script>
     </body>
 </html>
